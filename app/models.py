@@ -21,6 +21,19 @@ class SavingsGoal(db.Model):
     completed = db.Column(db.Boolean, nullable=False, default=False)
     status = db.Column(db.String(50), nullable=False, default='In Progress')
     
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            'target_amount': self.target_amount,
+            'current_amount': self.current_amount,
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+            'completed': self.completed,
+            'status': self.status
+        }
+    
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     goal_id = db.Column(db.Integer, db.ForeignKey('savings_goal.id'), nullable=False)
