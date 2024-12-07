@@ -1,4 +1,5 @@
 from app import db
+from werkzeug.security import generate_password_hash
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -9,6 +10,15 @@ class User(db.Model):
     join_date = db.Column(db.DateTime, nullable=False)
     points = db.Column(db.Integer, nullable=False, default=0)
     level = db.Column(db.Integer, nullable=False, default=1)
+    
+    def __init__(self, first_name, last_name, email, password, join_date, points, level):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password = generate_password_hash(password)
+        self.join_date = join_date
+        self.points = points
+        self.level = level
     
     def serialize(self):
         return {
