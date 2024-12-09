@@ -1,6 +1,8 @@
+#Imports
 from app import db
 from werkzeug.security import generate_password_hash
 
+#User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
@@ -11,15 +13,17 @@ class User(db.Model):
     points = db.Column(db.Integer, nullable=False, default=0)
     level = db.Column(db.Integer, nullable=False, default=1)
     
+    #Constructor for making a new user
     def __init__(self, first_name, last_name, email, password, join_date, points, level):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.password = generate_password_hash(password)
+        self.password = generate_password_hash(password) #Hash the password
         self.join_date = join_date
         self.points = points
         self.level = level
     
+    #Function to serialize the user object
     def serialize(self):
         return {
             'id': self.id,
@@ -31,6 +35,7 @@ class User(db.Model):
             'level': self.level
         }
     
+#Savings goal model
 class SavingsGoal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -42,6 +47,7 @@ class SavingsGoal(db.Model):
     completed = db.Column(db.Boolean, nullable=False, default=False)
     status = db.Column(db.String(50), nullable=False, default='In Progress')
     
+    #Function to serialize the goal object
     def serialize(self):
         return {
             'id': self.id,
@@ -55,6 +61,7 @@ class SavingsGoal(db.Model):
             'status': self.status
         }
     
+#Transaction model
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     goal_id = db.Column(db.Integer, db.ForeignKey('savings_goal.id'), nullable=False)

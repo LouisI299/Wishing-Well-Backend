@@ -1,32 +1,35 @@
+#Imports
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
 
-
+#Define the database
 db = SQLAlchemy()
 
+#Function to create the app
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('instance.config.Config')
+    app.config.from_object('instance.config.Config') #Load the config file
     
     
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
-    # Extensions
-    db.init_app(app)
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}) #Allow requests from the frontend
     
-    with app.app_context():
+    db.init_app(app) #Initialize the database
+    
+    with app.app_context(): #Create the database tables
         from app import models
         db.create_all()
         db.session.commit()
         # add_test_data()
 
     # Blueprints
-    from app.routes import register_blueprints
-    register_blueprints(app)
+    from app.routes import register_blueprints 
+    register_blueprints(app) #Register the blueprints
 
     return app
 
+#Function to add test users and goals
 def add_test_data():
     from app.models import User, SavingsGoal
     # user1 = User(first_name='John', last_name='Doe', email = 'john@mail.com', password = 'password', join_date = datetime.now(), points = 0, level = 1)
