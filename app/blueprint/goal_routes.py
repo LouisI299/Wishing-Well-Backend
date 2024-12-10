@@ -36,9 +36,9 @@ def getCurrentUser_goals():
     try : 
         user_id = get_jwt_identity()
         
-        savingsGoal = SavingsGoal.query.filter_by(user_id=user_id).all()
-        if savingsGoal:
-            return jsonify([savingsGoal.serialize() for goal in savingsGoal]), 200
+        savingsGoals = SavingsGoal.query.filter_by(user_id=user_id).all()
+        if savingsGoals:
+            return jsonify([goal.serialize() for goal in savingsGoals]), 200
         else:
             return jsonify({"error": "You have no goals. Add one!"}), 404
     except Exception as e:
