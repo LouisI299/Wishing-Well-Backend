@@ -45,7 +45,7 @@ def getCurrentUser_goals():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
-    
+#route for creating a goal 
 @goal_bp.route('/user', methods=['POST'])
 @jwt_required()
 def create_goal():
