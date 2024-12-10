@@ -4,6 +4,7 @@ from ..models import User
 from datetime import datetime
 from app import db
 from werkzeug.security import check_password_hash
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 #Blueprint for users
 user_bp = Blueprint('user_bp', __name__)
@@ -41,24 +42,41 @@ def create_user():
 @user_bp.route('/login', methods=['POST'])
 def login():
     try:
-        data = request.get_json() #Get the JSON data from the frontend
-        if not data: #Check if the data is empty
-            raise ValueError()
+        data = request.get_json()
+        if not data:
+            raise ValueError("No data provided")
         
         email = data.get('email')
         password = data.get('password')
         
-        if not email or not password: #Check if there is no email or password 
-            raise ValueError()
+        if not email or not password:
+            raise ValueError("Email and password are required")
 
-        user = User.query.filter_by(email=email).first() #Get the user from the database with the email
-        if user and check_password_hash(user.password, password): #Check if the user exists and the password is correct
-            return jsonify({"success": True, "message": "Login successful"})
-        else: #If the user does not exist or the password is incorrect
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            access_token = create_access_token(identity=str(user.id))
+            return jsonify({"success": True, "message": "Login successful", "access_token": access_token})
+        else:
             return jsonify({"error": "Invalid email or password"}), 401
-    except Exception as e: #Catch errors
+    except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
-
+    
+#Route for getting the current user
+@user_bp.route('/current', methods=['GET'])
+@jwt_required()
+def get_current_user():
+    try:
+        
+        user_id = get_jwt_identity()
+        print(f"User ID from token: {user_id}")  
+        user = User.query.get(user_id)
+        if user:
+            return jsonify(user.serialize())
+        else:
+            return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
     
     

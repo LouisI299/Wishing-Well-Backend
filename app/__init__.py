@@ -3,6 +3,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
+from flask_jwt_extended import JWTManager
+
 
 #Define the database
 db = SQLAlchemy()
@@ -16,6 +18,7 @@ def create_app():
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}) #Allow requests from the frontend
     
     db.init_app(app) #Initialize the database
+    jwt = JWTManager(app) #Initialize the web token manager
     
     with app.app_context(): #Create the database tables
         from app import models
