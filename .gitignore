@@ -3,5 +3,10 @@ venv/
 *.pyc
 
 .env
+<<<<<<< HEAD
 requirements.txt
 requirements.txt
+=======
+
+instance/
+>>>>>>> d3b59a557f51a093ffceb12904a005dbe5dc51c1
