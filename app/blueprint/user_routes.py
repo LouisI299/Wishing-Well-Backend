@@ -69,7 +69,7 @@ def get_current_user():
     try:
         
         user_id = get_jwt_identity()
-        print(f"User ID from token: {user_id}")  
+        
         user = User.query.get(user_id)
         if user:
             return jsonify(user.serialize())
