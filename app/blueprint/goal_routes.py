@@ -45,6 +45,8 @@ def getCurrentUser_goals():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+    
+
 #route for creating a goal 
 @goal_bp.route('/user', methods=['POST'])
 @jwt_required()
@@ -54,10 +56,11 @@ def create_goal():
         user_id = get_jwt_identity()
         
         new_goal = SavingsGoal(
-            title=data['title'],
-            description=data['description'],
+            name=data['name'],
             target_amount=data['target_amount'],
-            current_amount=0,
+            current_amount=data['current_amount'],
+            start_date=data['start_date'],
+            end_date=data['end_date'],
             user_id=user_id
         )
         db.session.add(new_goal)
@@ -65,4 +68,3 @@ def create_goal():
     except Exception as e: #Catch errors 
         db.session.rollback()
         return jsonify(new_goal.serialize()), 201
-    
