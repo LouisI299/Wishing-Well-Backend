@@ -40,12 +40,14 @@ class SavingsGoal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
     target_amount = db.Column(db.Integer, nullable=False)
     current_amount = db.Column(db.Integer, nullable=False)
+    period_amount = db.Column(db.Integer, nullable=False) #Monthly or weekly amount
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
-    completed = db.Column(db.Boolean, nullable=False, default=False)
-    status = db.Column(db.String(50), nullable=False, default='In Progress')
+    saving_method = db.Column(db.Boolean, nullable=False, default=True) #Monthly = 1, Weekly = 0
+    status = db.Column(db.Boolean , nullable=False, default=True) #In Progress = 1, Completed = 0
     
     #Function to serialize the goal object
     def serialize(self):
@@ -53,10 +55,13 @@ class SavingsGoal(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'name': self.name,
+            'category': self.category,
             'target_amount': self.target_amount,
             'current_amount': self.current_amount,
+            'period_amount': self.period_amount,
             'start_date': self.start_date,
             'end_date': self.end_date,
+            'saving_method': self.saving_method,
             'completed': self.completed,
             'status': self.status
         }
