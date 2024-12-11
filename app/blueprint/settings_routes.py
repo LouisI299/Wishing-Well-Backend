@@ -92,8 +92,36 @@ def change_password():
         return jsonify({"msg": "An error occurred while changing password"}), 500
     
 
-    
+@settings_bp.route('/change_notification_settings', methods=['POST'])
+@jwt_required()
+def change_notification_settings():
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
 
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        data = request.get_json()
+        email_notifications = data.get('email_notifications')
+        push_notifications = data.get('push_notifications')
+        sms_notifications = data.get('sms_notifications')
+
+        if email_notifications is not None:
+            user.email_notifications = email_notifications
+        if push_notifications is not None:
+            user.push_notifications = push_notifications
+        if sms_notifications is not None:
+            user.sms_notifications = sms_notifications
+
+        db.session.commit()
+        return jsonify({"msg": "Notification settings updated successfully"}), 200   
+
+    except Exception as e:
+        db.session.rollback()
+        # Log the exception (replace with logging in production)
+        print(f"Error changing notification settings: {e}")
+        return jsonify({"msg": "An error occurred while changing notification settings"}), 500
 
     
 
