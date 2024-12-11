@@ -1,6 +1,8 @@
 #Imports
 from app import db
 from werkzeug.security import generate_password_hash
+from pydantic import BaseModel, EmailStr, StringConstraints, constr
+from typing_extensions import Optional, Annotated
 
 #User model
 class User(db.Model):
@@ -82,3 +84,27 @@ class Transaction(db.Model):
             'transaction_date': self.transaction_date,
             'type': self.type
         }
+        
+#Pydantic model for validating login data
+class UserLoginModel(BaseModel):
+    email: EmailStr
+    password: constr(min_length=6)
+    
+    
+#Pydantic model for creating a new user
+class UserCreateModel(BaseModel):
+    first_name: constr(min_length=2, max_length=50)
+    last_name: constr(min_length=2, max_length=50)
+    email: EmailStr
+    password: constr(min_length=6)
+    
+#Pydantic model for creating a new goal
+class GoalCreateModel(BaseModel):
+    name: constr(min_length=2, max_length=50)
+    target_amount: int
+    current_amount: Optional[float] = 0
+    end_date: str
+    category: constr(min_length=2, max_length=50)
+    period_amount: Optional[float] = 0
+    saving_method: bool
+    

@@ -53,28 +53,26 @@ def getCurrentUser_goals():
 def create_goal():
     try:
         data = request.get_json()
+        if not data:
+            raise ValueError("No data provided")
+        
+        goal_data = SavingsGoal(**data)
+    
         user_id = get_jwt_identity()
-        name = data['name']
-        target_amount = data['target_amount']
-        current_amount = data['current_amount']
         start_date = datetime.now()
-        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')  # Convert end_date to datetime object
-        category = data['category']
-        period_amount = data['period_amount']
-        status = True
-        saving_method = data['saving_method']
+        end_date = datetime.strptime(goal_data.end_date, '%Y-%m-%d')  # Convert end_date string to datetime object
 
         new_goal = SavingsGoal(
-            name=name,
-            target_amount=target_amount,
-            current_amount=current_amount,
+            name=goal_data.name,
+            target_amount=goal_data.target_amount,
+            current_amount=goal_data.current_amount,
             start_date=start_date,
             end_date=end_date,
             user_id=user_id,
-            category=category,
-            period_amount=period_amount,
-            status=status,
-            saving_method=saving_method
+            category=goal_data.category,
+            period_amount=goal_data.period_amount,
+            status=goal_data.status,
+            saving_method=goal_data.saving_method
         )
 
         db.session.add(new_goal)

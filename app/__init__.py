@@ -27,7 +27,7 @@ def create_app():
         from app import models
         db.create_all()
         db.session.commit()
-        #add_test_data()
+        add_test_data()
 
     # Blueprints
     from app.routes import register_blueprints 
@@ -35,26 +35,83 @@ def create_app():
 
     return app
 
+
+# Test data
+USERS = [
+    {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@m.m",
+        "password": "password"
+    },
+    {
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "email": "jane@m.m",
+        "password": "password"
+    },
+    {
+        "first_name": "James",
+        "last_name": "Bond",
+        "email": "james@m.m",
+        "password": "password"
+    },
+    {
+        "first_name": "Alex",
+        "last_name": "Pereira",
+        "email": "alex@m.m",
+        "password": "password"
+    }
+]
+
+USER_DEFAULTS = {
+    "join_date": datetime.now(),
+    "points": 0,
+    "level": 1
+}
+
+GOALS = [
+    {
+        "user_id": 1,
+        "name": "New Car",
+        "target_amount": 20000,
+        "current_amount": 0,
+        "end_date": datetime(2025, 12, 31),
+        "category": "Automotive",
+        "period_amount": 200,
+    },
+    {
+        "user_id": 2,
+        "name": "New House",
+        "target_amount": 50000,
+        "current_amount": 0,
+        "end_date": datetime(2030, 12, 31),
+        "category": "Real Estate",
+        "period_amount": 500,
+    },
+    {
+        "user_id": 3,
+        "name": "New Phone",
+        "target_amount": 1000,
+        "current_amount": 100,
+        "end_date": datetime(2025, 12, 31),
+        "category": "Electronics",
+        "period_amount": 100,
+    }
+]
+
+GOAL_DEFAULTS = {
+    "start_date": datetime.now(),
+    "status": True
+}
+
 #Function to add test users and goals
 def add_test_data():
     from app.models import User, SavingsGoal
-    user1 = User(first_name='John', last_name='Doe', email = 'john@m', password = 'password', join_date = datetime.now(), points = 0, level = 1)
-    db.session.add(user1)
-    user2 = User(first_name='Jane', last_name='Doe', email = 'jane@m', password = 'password', join_date = datetime.now(), points = 0, level = 1)
-    user3 = User(first_name='Test', last_name='User', email = 'test@m', password = 'password', join_date = datetime.now(), points = 0, level = 1)
-    user4 = User(first_name='Nogoals', last_name='User', email = 'user@m', password = 'password', join_date = datetime.now(), points = 0, level = 1)
-    db.session.add(user4)
+    for user in USERS:
+        db.session.add(User(**user, **USER_DEFAULTS))
     db.session.commit()
     
-    db.session.add(user1)
-    db.session.add(user2)
-    db.session.add(user3)
-    db.session.commit()
-    goal1 = SavingsGoal(user_id = 1, name = 'New Car', target_amount = 20000, current_amount = 0, start_date = datetime.now(), end_date = datetime(2025, 12, 31), status = True, category = 'Automotive', period_amount = 200)
-    goal2 = SavingsGoal(user_id = 2, name = 'New House', target_amount = 50000, current_amount = 0, start_date = datetime.now(), end_date = datetime(2030, 12, 31), status = True, category = 'Real Estate', period_amount = 500)
-    goal3 = SavingsGoal(user_id = 3, name = 'New Phone', target_amount = 1000, current_amount = 0, start_date = datetime.now(), end_date = datetime(2025, 12, 31), status = True, category = 'Electronics', period_amount = 100)
-    db.session.add(goal1)
-    db.session.add(goal2)
-    db.session.add(goal3)
-    
+    for goal in GOALS:
+        db.session.add(SavingsGoal(**goal, **GOAL_DEFAULTS))
     db.session.commit()

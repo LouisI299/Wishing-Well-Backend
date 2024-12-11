@@ -1,6 +1,6 @@
 #Imports
 from flask import Blueprint, request, jsonify
-from ..models import User
+from ..models import User, UserLoginModel, UserCreateModel
 from datetime import datetime
 from app import db
 from werkzeug.security import check_password_hash
@@ -22,11 +22,12 @@ def get_users():
 def create_user():
     try:
         data = request.get_json() #Get the JSON data from the frontend
+        user_data = UserCreateModel(**data) 
         new_user = User( #Create a new user instance
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            email=data['email'],
-            password=data['password'],
+            first_name=user_data.first_name,
+            last_name=user_data.last_name,
+            email=user_data.email,
+            password=user_data.password,
             join_date=datetime.now(),
             points=0,
             level=1
@@ -46,14 +47,10 @@ def login():
         if not data:
             raise ValueError("No data provided")
         
-        email = data.get('email')
-        password = data.get('password')
+        user_data = UserLoginModel(**data)
         
-        if not email or not password:
-            raise ValueError("Email and password are required")
-
-        user = User.query.filter_by(email=email).first()
-        if user and check_password_hash(user.password, password):
+        user = User.query.filter_by(email=user_data.email).first()
+        if user and check_password_hash(user.password, user_data.password):
             access_token = create_access_token(identity=str(user.id))
             return jsonify({"success": True, "message": "Login successful", "access_token": access_token})
         else:
@@ -77,6 +74,6 @@ def get_current_user():
             return jsonify({"error": "User not found"}), 404
     except Exception as e:
         print(f"Error: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 200
     
     
