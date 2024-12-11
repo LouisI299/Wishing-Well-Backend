@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
 from flask_jwt_extended import JWTManager
+import os
 
 
 #Define the database
@@ -11,8 +12,10 @@ db = SQLAlchemy()
 
 #Function to create the app
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="../../frontend/public", static_url_path="/static")
     app.config.from_object('instance.config.Config') #Load the config file
+    
+    print(f"Static folder path: {os.path.abspath(app.static_folder)}")
     
     
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}) #Allow requests from the frontend
