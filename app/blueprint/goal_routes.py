@@ -58,28 +58,30 @@ def create_goal():
         target_amount = data['target_amount']
         current_amount = data['current_amount']
         start_date = datetime.now()
-        end_date = data['end_date']
-        user_id = user_id
+        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')  # Convert end_date to datetime object
         category = data['category']
         period_amount = data['period_amount']
         status = True
         saving_method = data['saving_method']
 
-        
         new_goal = SavingsGoal(
-           name = name,
-            target_amount = target_amount,
-            current_amount = current_amount,
-            start_date = start_date,
-            end_date = end_date,
-            user_id = user_id,
-            category = category,
-            period_amount = period_amount,
-            status = status,
-            saving_method = saving_method
+            name=name,
+            target_amount=target_amount,
+            current_amount=current_amount,
+            start_date=start_date,
+            end_date=end_date,
+            user_id=user_id,
+            category=category,
+            period_amount=period_amount,
+            status=status,
+            saving_method=saving_method
         )
+
         db.session.add(new_goal)
         db.session.commit()
-    except Exception as e: #Catch errors 
-        db.session.rollback()
+
         return jsonify(new_goal.serialize()), 201
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500

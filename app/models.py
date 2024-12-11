@@ -62,7 +62,7 @@ class SavingsGoal(db.Model):
             'start_date': self.start_date,
             'end_date': self.end_date,
             'saving_method': self.saving_method,
-            'completed': self.completed,
+            
             'status': self.status
         }
     
