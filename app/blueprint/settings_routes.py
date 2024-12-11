@@ -11,7 +11,7 @@ from werkzeug.security import check_password_hash
 settings_bp = Blueprint('settings_bp', __name__)
 
 #Route to edit the user's profile
-@settings_bp.route('EditProfile', methods=['GET', 'POST'])
+@settings_bp.route('/EditProfile', methods=['GET', 'POST'])
 @jwt_required()
 def edit_profile():
     user_id = get_jwt_identity()
@@ -90,6 +90,8 @@ def change_password():
         # Log the exception (replace with logging in production)
         print(f"Error changing password: {e}")
         return jsonify({"msg": "An error occurred while changing password"}), 500
+    
+
     
 
 
