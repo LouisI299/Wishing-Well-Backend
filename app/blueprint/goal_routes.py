@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 from ..models import SavingsGoal
 from app import db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from datetime import datetime
 
 #Make a Blueprint for goals
 goal_bp = Blueprint('goal_bp', __name__)
@@ -38,15 +39,16 @@ def getCurrentUser_goals():
         user_id = get_jwt_identity()
         
         savingsGoals = SavingsGoal.query.filter_by(user_id=user_id).all()
-        if savingsGoals:
-            return jsonify([goal.serialize() for goal in savingsGoals]), 200
-        else:
-            return jsonify({"error": "You have no goals. Add one!"}), 404
+        
+        return jsonify([goal.serialize() for goal in savingsGoals]), 200
+       
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+    
+
 #route for creating a goal 
-@goal_bp.route('/user', methods=['POST'])
+@goal_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_goal():
     try:
@@ -54,15 +56,19 @@ def create_goal():
         user_id = get_jwt_identity()
         
         new_goal = SavingsGoal(
-            title=data['title'],
-            description=data['description'],
+            name=data['name'],
             target_amount=data['target_amount'],
-            current_amount=0,
-            user_id=user_id
+            current_amount=data['current_amount'],
+            start_date=datetime.now(),
+            end_date=data['end_date'],
+            user_id=user_id,
+            category=data['category'],
+            period_amount=data['period_amount'],
+            status= True,
+            saving_method=data['saving_method']
         )
         db.session.add(new_goal)
         db.session.commit()
     except Exception as e: #Catch errors 
         db.session.rollback()
         return jsonify(new_goal.serialize()), 201
-    
