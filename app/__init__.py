@@ -27,7 +27,7 @@ def create_app():
         from app import models
         db.create_all()
         db.session.commit()
-        #add_test_data()
+        add_test_data()
 
     # Blueprints
     from app.routes import register_blueprints 
@@ -39,9 +39,13 @@ def create_app():
 def add_test_data():
     from app.models import User, SavingsGoal
     user1 = User(first_name='John', last_name='Doe', email = 'john@m', password = 'password', join_date = datetime.now(), points = 0, level = 1)
-    # db.session.add(user1)
+    db.session.add(user1)
     user2 = User(first_name='Jane', last_name='Doe', email = 'jane@m', password = 'password', join_date = datetime.now(), points = 0, level = 1)
     user3 = User(first_name='Test', last_name='User', email = 'test@m', password = 'password', join_date = datetime.now(), points = 0, level = 1)
+    user4 = User(first_name='Nogoals', last_name='User', email = 'user@m', password = 'password', join_date = datetime.now(), points = 0, level = 1)
+    db.session.add(user4)
+    db.session.commit()
+    
     db.session.add(user1)
     db.session.add(user2)
     db.session.add(user3)
