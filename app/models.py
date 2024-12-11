@@ -68,3 +68,12 @@ class Transaction(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     transaction_date = db.Column(db.DateTime, nullable=False)
     type = db.Column(db.String(50), nullable=False)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'goal_id': self.goal_id,
+            'amount': self.amount,
+            'transaction_date': self.transaction_date,
+            'type': self.type
+        }
