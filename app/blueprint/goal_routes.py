@@ -83,3 +83,26 @@ def create_goal():
         db.session.rollback()
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+
+# Route for updating a goal by ID
+@goal_bp.route('/<int:id>', methods=['PUT']) 
+@jwt_required()
+def update_goal(id):
+    try:
+        data = request.get_json()
+        goal = SavingsGoal.query.get(id)
+        if not goal:
+            return jsonify({"error": "Goal not found"}), 404
+
+        goal.name = data.get('name', goal.name)
+        goal.target_amount = data.get('target_amount', goal.target_amount)
+        goal.current_amount = data.get('current_amount', goal.current_amount)
+        goal.start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d')
+        goal.end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%d')
+
+        db.session.commit()
+        return jsonify(goal.serialize()), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
