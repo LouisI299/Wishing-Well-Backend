@@ -27,7 +27,7 @@ def create_app():
         from app import models
         db.create_all()
         db.session.commit()
-        add_test_data()
+        #add_test_data()
 
     # Blueprints
     from app.routes import register_blueprints 
