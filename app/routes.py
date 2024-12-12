@@ -13,6 +13,7 @@ def register_blueprints(app):
     app.register_blueprint(transaction_bp, url_prefix='/api/transactions')
     app.register_blueprint(settings_bp, url_prefix='/api/settings')
     
+    
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def serve_react_app(path):

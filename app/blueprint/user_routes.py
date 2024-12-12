@@ -81,4 +81,13 @@ def get_current_user():
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 200
     
-    
+#Route for refreshing user token
+@user_bp.route('/refresh_token', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh_token():
+    try:
+        user_id = get_jwt_identity()
+        access_token = create_access_token(identity=user_id)
+        return jsonify({"access_token": access_token}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
