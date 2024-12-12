@@ -11,10 +11,10 @@ goal_bp = Blueprint('goal_bp', __name__)
 #Routes
 
 #Route for getting all goals
-@goal_bp.route('/all', methods=['GET'])
-def get_goals():
-    goals = SavingsGoal.query.all()
-    return jsonify([goal.serialize() for goal in goals])
+# @goal_bp.route('/all', methods=['GET'])
+# def get_goals():
+#     goals = SavingsGoal.query.all()
+#     return jsonify([goal.serialize() for goal in goals])
 
 #Route for getting a goal by ID
 @goal_bp.route('/<int:id>', methods=['GET'])
