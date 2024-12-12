@@ -5,6 +5,7 @@ from datetime import datetime
 from app import db
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from pydantic import ValidationError
 
 #Blueprint for users
 user_bp = Blueprint('user_bp', __name__)
@@ -55,6 +56,8 @@ def login():
             return jsonify({"success": True, "message": "Login successful", "access_token": access_token})
         else:
             return jsonify({"error": "Invalid email or password"}), 401
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
@@ -72,6 +75,8 @@ def get_current_user():
             return jsonify(user.serialize())
         else:
             return jsonify({"error": "User not found"}), 404
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 200
