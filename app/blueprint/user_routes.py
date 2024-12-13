@@ -1,11 +1,12 @@
 #Imports
 from flask import Blueprint, request, jsonify
 from ..models import User, UserLoginModel, UserCreateModel
-from datetime import datetime
+from datetime import datetime, timedelta
 from app import db
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, create_refresh_token
 from pydantic import ValidationError
+
 
 #Blueprint for users
 user_bp = Blueprint('user_bp', __name__)
@@ -52,7 +53,7 @@ def login():
         
         user = User.query.filter_by(email=user_data.email).first()
         if user and check_password_hash(user.password, user_data.password):
-            access_token = create_access_token(identity=str(user.id))
+            access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(hours=1))
             
             return jsonify({
             'access_token': access_token,
