@@ -10,11 +10,11 @@ goal_bp = Blueprint('goal_bp', __name__)
 
 #Routes
 
-#Route for getting all goals
-# @goal_bp.route('/all', methods=['GET'])
-# def get_goals():
-#     goals = SavingsGoal.query.all()
-#     return jsonify([goal.serialize() for goal in goals])
+# Route for getting all goals
+@goal_bp.route('/all', methods=['GET'])
+def get_goals():
+    goals = SavingsGoal.query.all()
+    return jsonify([goal.serialize() for goal in goals])
 
 #Route for getting a goal by ID
 @goal_bp.route('/<int:id>', methods=['GET'])
@@ -38,9 +38,9 @@ def getCurrentUser_goals():
     try : 
         user_id = get_jwt_identity()
         
-        savingsGoals = SavingsGoal.query.filter_by(user_id=user_id).all()
+        goals = SavingsGoal.query.filter_by(user_id=user_id).all()
         
-        return jsonify([goal.serialize() for goal in savingsGoals]), 200
+        return jsonify([goal.serialize() for goal in goals]), 200
        
     except Exception as e:
         print(f"Error: {e}")
