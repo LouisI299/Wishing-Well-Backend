@@ -106,3 +106,20 @@ def update_goal(id):
         db.session.rollback()
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+
+# Route for deleting a goal by ID
+@goal_bp.route('/<int:id>', methods=['DELETE'])
+@jwt_required()
+def delete_goal(id):
+    try:
+        goal = SavingsGoal.query.get(id)
+        if not goal:
+            return jsonify({"error": "Goal not found"}), 404
+
+        db.session.delete(goal)
+        db.session.commit()
+        return jsonify({"message": "Goal deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
