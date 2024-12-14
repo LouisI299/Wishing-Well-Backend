@@ -10,7 +10,7 @@ from werkzeug.security import check_password_hash
 #Blueprint for settings
 settings_bp = Blueprint('settings_bp', __name__)
  
-@settings_bp.route('/EditAccount', methods=['PUT'])
+@settings_bp.route('/', methods=['PUT'])
 @jwt_required()
 def edit_account():
     user_id = get_jwt_identity()
