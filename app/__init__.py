@@ -77,7 +77,7 @@ GOALS = [
         "target_amount": 20000,
         "current_amount": 0,
         "end_date": datetime(2025, 12, 31),
-        "category": "Automotive",
+        "category": "car",
         "period_amount": 200,
     },
     {
@@ -86,7 +86,7 @@ GOALS = [
         "target_amount": 50000,
         "current_amount": 0,
         "end_date": datetime(2030, 12, 31),
-        "category": "Real Estate",
+        "category": "house",
         "period_amount": 500,
     },
     {
@@ -95,7 +95,7 @@ GOALS = [
         "target_amount": 1000,
         "current_amount": 100,
         "end_date": datetime(2025, 12, 31),
-        "category": "Electronics",
+        "category": "electronics",
         "period_amount": 100,
     }
 ]

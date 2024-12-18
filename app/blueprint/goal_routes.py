@@ -8,6 +8,8 @@ from datetime import datetime
 #Make a Blueprint for goals
 goal_bp = Blueprint('goal_bp', __name__)
 
+
+
 #Routes
 
 # Route for getting all goals
@@ -60,7 +62,10 @@ def create_goal():
     
         user_id = get_jwt_identity()
         start_date = datetime.now()
-        end_date = datetime.strptime(goal_data.end_date, '%Y-%m-%d')  # Convert end_date string to datetime object
+        end_date = datetime.strptime(goal_data.end_date, '%Y-%m-%d')
+        
+        
+        
 
         new_goal = SavingsGoal(
             name=goal_data.name,

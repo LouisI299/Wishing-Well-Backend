@@ -48,6 +48,7 @@ class SavingsGoal(db.Model):
     period_amount = db.Column(db.Integer, nullable=False) #Monthly or weekly amount
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
+    
     saving_method = db.Column(db.Boolean, nullable=False, default=True) #Monthly = 1, Weekly = 0
     status = db.Column(db.Boolean , nullable=False, default=True) #In Progress = 1, Completed = 0
     
@@ -63,6 +64,7 @@ class SavingsGoal(db.Model):
             'period_amount': self.period_amount,
             'start_date': self.start_date,
             'end_date': self.end_date,
+            
             'saving_method': self.saving_method,
             
             'status': self.status
