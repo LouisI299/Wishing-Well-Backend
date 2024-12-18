@@ -103,8 +103,6 @@ def update_goal(id):
         goal.target_amount = data.get('target_amount', goal.target_amount)
         goal.current_amount = data.get('current_amount', goal.current_amount)
         goal.end_date = datetime.strptime(data.get("end_date"), '%Y-%m-%d')
-        goal.saving_method = data.get('saving_method', goal.saving_method)
-        goal.period_amount = data.get('period_amount', goal.period_amount)
 
         db.session.commit()
         return jsonify(goal.serialize()), 200
