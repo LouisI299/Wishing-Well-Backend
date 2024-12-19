@@ -87,6 +87,26 @@ class Transaction(db.Model):
             'type': self.type
         }
         
+class Streak(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, nullable=True)
+    check_date = db.Column(db.DateTime, nullable=False)
+    current_streak = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.Boolean, nullable=False, default=True)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+            'last_checked': self.last_checked,
+            'current_streak': self.current_streak,
+            'status': self.status
+        }
+        
 #Pydantic model for validating login data
 class UserLoginModel(BaseModel):
     email: EmailStr

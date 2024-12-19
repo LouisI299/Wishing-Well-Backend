@@ -5,6 +5,8 @@ from flask_cors import CORS
 from datetime import datetime
 from flask_jwt_extended import JWTManager
 import os
+from app.tasks.scheduler import start_scheduler
+import atexit
 
 
 #Define the database
@@ -28,10 +30,20 @@ def create_app():
         db.create_all()
         db.session.commit()
         #add_test_data()
+        
+    with app.app_context(): #Start the scheduler
+        scheduler = start_scheduler(app)
+        
 
     # Blueprints
     from app.routes import register_blueprints 
     register_blueprints(app) #Register the blueprints
+    
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db.session.remove()
+    
+    atexit.register(lambda: scheduler.shutdown())
 
     return app
 

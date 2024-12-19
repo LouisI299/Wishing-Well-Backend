@@ -1,11 +1,15 @@
 annotated-types==0.7.0
+APScheduler==3.11.0
 blinker==1.9.0
 click==8.1.7
+dnspython==2.7.0
+email_validator==2.2.0
 Flask==3.1.0
 Flask-Cors==5.0.0
 Flask-JWT-Extended==4.7.1
 flask-openapi3==4.0.3
 Flask-SQLAlchemy==3.1.1
+idna==3.10
 itsdangerous==2.2.0
 Jinja2==3.1.4
 MarkupSafe==3.0.2
@@ -15,4 +19,5 @@ PyJWT==2.10.1
 python-dotenv==1.0.1
 SQLAlchemy==2.0.36
 typing_extensions==4.12.2
+tzlocal==5.2
 Werkzeug==3.1.3
