@@ -16,7 +16,7 @@ def start_scheduler(app):
     scheduler.add_job(
         func=check_user_streaks,
         trigger='interval',
-        minutes=1,
+        minutes=1440,
         id='streak_check',
         replace_existing=True
     )
