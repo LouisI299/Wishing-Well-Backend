@@ -20,7 +20,7 @@ def create_app():
     print(f"Static folder path: {os.path.abspath(app.static_folder)}")
     
     
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}) #Allow requests from the frontend
+    CORS(app, resources={r"/api/*": {"origins": "*"}}) #Allow requests from the frontend
     
     db.init_app(app) #Initialize the database
     jwt = JWTManager(app) #Initialize the web token manager
