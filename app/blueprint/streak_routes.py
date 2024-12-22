@@ -5,9 +5,9 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 
-streak_bp = Blueprint('streaks_bp', __name__)
+streaks_bp = Blueprint('streaks_bp', __name__)
 
-@streak_bp.route('/', methods=['GET'])
+@streaks_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_streaks():
     user_id = get_jwt_identity()
