@@ -1,6 +1,6 @@
 #Imports
 from flask import Blueprint, request, jsonify
-from ..models import SavingsGoal, Transaction
+from ..models import SavingsGoal, Transaction, User, Streak
 from app import db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import datetime
@@ -16,6 +16,10 @@ def create_transaction():
         goal_id = data['goal_id']
         amount = data['amount']
         type = data['type']
+        user_id = get_jwt_identity()
+        
+        user = User.query.get(user_id)
+        active_streak = Streak.query.filter_by(user_id=user_id, status = True)
         
         
         new_transaction = Transaction(
@@ -33,6 +37,16 @@ def create_transaction():
             transaction_goal.current_amount += amount
         else:
             transaction_goal.current_amount -= amount
+        
+        points_gained = (amount / transaction_goal.period_amount) * 10
+        if active_streak:
+            points_gained = points_gained * active_streak.current_streak
+            
+        user.points += points_gained
+        required_points = user.level * 100
+        if user.points >= required_points:
+            user.points -= required_points
+            user.level += 1
         
         db.session.commit()
         
