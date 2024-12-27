@@ -45,7 +45,7 @@ def create_transaction():
         user.points += points_gained
         required_points = user.level * 100
         if user.points >= required_points:
-            user.points -= required_points
+            user.points = 0
             user.level += 1
         
         db.session.commit()
