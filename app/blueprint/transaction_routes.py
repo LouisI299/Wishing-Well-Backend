@@ -25,7 +25,7 @@ def create_transaction():
         if not goal:
             return jsonify({"error": "Goal not found"}), 404
         
-        if amount + goal.current_amount > goal.goal_amount:
+        if amount + goal.current_amount > goal.target_amount:
             return jsonify({"error": "Amount exceeds goal amount"}), 400
         
         new_transaction = Transaction(
