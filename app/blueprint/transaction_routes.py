@@ -19,7 +19,7 @@ def create_transaction():
         user_id = get_jwt_identity()
         
         user = User.query.get(user_id)
-        active_streak = Streak.query.filter_by(user_id=user_id, status = True)
+        active_streak = Streak.query.filter_by(user_id=user_id, status = True).first()
         
         
         new_transaction = Transaction(
