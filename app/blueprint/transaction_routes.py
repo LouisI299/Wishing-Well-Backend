@@ -25,8 +25,9 @@ def create_transaction():
         if not goal:
             return jsonify({"error": "Goal not found"}), 404
         
-        if amount + goal.current_amount > goal.target_amount:
-            return jsonify({"error": "Amount exceeds goal amount"}), 400
+        
+        
+        
         
         new_transaction = Transaction(
             goal_id=goal_id,
@@ -41,8 +42,12 @@ def create_transaction():
         transaction_goal = SavingsGoal.query.get(goal_id)
         if type == 'deposit':
             transaction_goal.current_amount += amount
+            if amount + goal.current_amount > goal.target_amount:
+                return jsonify({"error": "Amount exceeds goal amount"}), 400
         else:
             transaction_goal.current_amount -= amount
+            if amount > goal.current_amount:
+                return jsonify({"error": "Amount exceeds goal amount"}), 400
         
         points_gained = (amount / transaction_goal.period_amount) * 10
         if active_streak:
