@@ -20,7 +20,13 @@ def create_transaction():
         
         user = User.query.get(user_id)
         active_streak = Streak.query.filter_by(user_id=user_id, status = True).first()
+        goal = SavingsGoal.query.get(goal_id)
         
+        if not goal:
+            return jsonify({"error": "Goal not found"}), 404
+        
+        if amount + goal.current_amount > goal.goal_amount:
+            return jsonify({"error": "Amount exceeds goal amount"}), 400
         
         new_transaction = Transaction(
             goal_id=goal_id,
