@@ -43,9 +43,9 @@ def create_transaction():
             points_gained = points_gained * active_streak.current_streak
             
         user.points += points_gained
-        required_points = user.level * 100
-        if user.points >= required_points:
-            user.points = 0
+        
+        while user.points >= user.level * 100:
+            user.points -= user.level * 100
             user.level += 1
         
         db.session.commit()
