@@ -42,11 +42,11 @@ def create_transaction():
         transaction_goal = SavingsGoal.query.get(goal_id)
         if type == 'deposit':
             transaction_goal.current_amount += amount
-            if amount + goal.current_amount > goal.target_amount:
+            if transaction_goal.current_amount > transaction_goal.target_amount:
                 return jsonify({"error": "Amount exceeds goal amount"}), 400
         else:
             transaction_goal.current_amount -= amount
-            if amount > goal.current_amount:
+            if amount > transaction_goal.current_amount:
                 return jsonify({"error": "Amount exceeds goal amount"}), 400
             
         if transaction_goal.current_amount == transaction_goal.target_amount:
