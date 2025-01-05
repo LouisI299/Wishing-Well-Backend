@@ -48,6 +48,9 @@ def create_transaction():
             transaction_goal.current_amount -= amount
             if amount > goal.current_amount:
                 return jsonify({"error": "Amount exceeds goal amount"}), 400
+            
+        if transaction_goal.current_amount == transaction_goal.target_amount:
+            transaction_goal.status = False
         
         points_gained = (amount / transaction_goal.period_amount) * 10
         if active_streak:
