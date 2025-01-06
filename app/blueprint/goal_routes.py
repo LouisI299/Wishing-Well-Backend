@@ -65,7 +65,7 @@ def create_goal():
         end_date = datetime.strptime(goal_data.end_date, '%Y-%m-%d')
         
         if goal_data.saving_method == True:
-            next_due_date = datetime.now() + timedelta(weeks=4)
+            next_due_date = datetime.now() + timedelta(days=31)
         else:
             next_due_date = datetime.now() + timedelta(weeks=1)
         
