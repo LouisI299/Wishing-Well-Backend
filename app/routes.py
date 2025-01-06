@@ -14,6 +14,7 @@ def register_blueprints(app):
     app.register_blueprint(transaction_bp, url_prefix='/api/transactions')
     app.register_blueprint(settings_bp, url_prefix='/api/settings')
     app.register_blueprint(streaks_bp, url_prefix='/api/streaks')
+    app.register_blueprint(friends_bp, url_prefix='/api/friends')
     
     
     
