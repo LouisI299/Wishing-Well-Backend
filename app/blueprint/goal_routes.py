@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from ..models import SavingsGoal
 from app import db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from datetime import datetime
+from datetime import datetime, timedelta
 
 #Make a Blueprint for goals
 goal_bp = Blueprint('goal_bp', __name__)
@@ -64,7 +64,10 @@ def create_goal():
         start_date = datetime.now()
         end_date = datetime.strptime(goal_data.end_date, '%Y-%m-%d')
         
-        
+        if goal_data.saving_method == True:
+            next_due_date = datetime.now() + timedelta(weeks=4)
+        else:
+            next_due_date = datetime.now() + timedelta(weeks=1)
         
 
         new_goal = SavingsGoal(
@@ -77,7 +80,8 @@ def create_goal():
             category=goal_data.category,
             period_amount=goal_data.period_amount,
             status=goal_data.status,
-            saving_method=goal_data.saving_method
+            saving_method=goal_data.saving_method,
+            next_due_date=next_due_date
         )
 
         db.session.add(new_goal)
