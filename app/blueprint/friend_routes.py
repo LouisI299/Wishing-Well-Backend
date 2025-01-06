@@ -20,6 +20,8 @@ def get_friends():
         friendships = Friendship.query.filter_by(user_id1=user_id).all()
         friend_ids = [friendship.user_id2 for friendship in friendships]
         friends = User.query.filter(User.id.in_(friend_ids)).all()
+        if not friends:
+            return jsonify([])
         return jsonify([friend.serialize() for friend in friends])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
