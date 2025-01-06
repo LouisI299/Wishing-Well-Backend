@@ -92,16 +92,22 @@ def get_current_user():
 @jwt_required()
 def delete_user():
     try:
-        user_id = get_jwt_identity() 
+        user_id = get_jwt_identity()
         
-        user = User.query.get(user_id)  
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            return jsonify({"error": "Invalid user ID"}), 400
+        
+        user = User.query.filter_by(id=user_id).first()
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        db.session.delete(user)  
+        db.session.delete(user)
         db.session.commit()
         
         return jsonify({"message": "User account deleted successfully"}), 200
     except Exception as e:
-        db.session.rollback()  
-        return jsonify({"error": str(e)}), 500
+        db.session.rollback()
+        print(f"Error deleting user: {e}")
+        return jsonify({"error": "An error occurred while deleting the user"}), 500
