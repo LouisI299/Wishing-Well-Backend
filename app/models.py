@@ -102,7 +102,7 @@ class Streak(db.Model):
             'user_id': self.user_id,
             'start_date': self.start_date,
             'end_date': self.end_date,
-            'last_checked': self.last_checked,
+            # 'last_checked': self.last_checked,
             'current_streak': self.current_streak,
             'status': self.status
         }
