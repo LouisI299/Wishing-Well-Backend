@@ -19,6 +19,16 @@ def get_users():
     users = User.query.all() #Get all users from the database
     return jsonify([user.serialize() for user in users]) #Return a JSON response for the frontend
 
+@user_bp.route('/<int:id>', methods=['GET'])
+@jwt_required()
+def get_user(id):
+    user = User.query.get(id)
+    if user:
+        return jsonify(user.serialize())
+    else:
+        return jsonify({"error": "User not found"}), 404
+    
+
 #Route for creating a new user
 @user_bp.route('/', methods=['POST'])
 def create_user():
