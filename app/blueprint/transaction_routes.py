@@ -51,6 +51,7 @@ def create_transaction():
             
         if transaction_goal.current_amount == transaction_goal.target_amount:
             transaction_goal.status = False
+            transaction_goal.end_date = datetime.now()
         
         points_gained = (amount / transaction_goal.period_amount) * 10
         if active_streak:
