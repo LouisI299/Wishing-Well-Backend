@@ -65,7 +65,8 @@ def add_friend():
         new_friendship = Friendship(
             user_id1=user_id,
             user_id2=friend_id,
-            status=False
+            status=False,
+            date = datetime.now()
         )
         
         db.session.add(new_friendship)
