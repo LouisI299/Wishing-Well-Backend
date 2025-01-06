@@ -111,3 +111,24 @@ def delete_user():
         db.session.rollback()
         print(f"Error deleting user: {e}")
         return jsonify({"error": "An error occurred while deleting the user"}), 500
+    
+    
+@user_bp.route('/search', methods=['GET'])
+@jwt_required()
+def search_users():
+    try:
+        user_id = get_jwt_identity()
+        query = request.args.get('query', '').lower()  # Get search query from URL
+        if not query:
+            return jsonify([])  # Return an empty list if no query is provided
+        
+        # Search for users that match the query in first_name or last_name (case-insensitive)
+        users = User.query.filter(
+            (User.first_name.ilike(f'%{query}%')) | (User.last_name.ilike(f'%{query}%'))
+        ).all()
+
+        # Return serialized user data (except the logged-in user)
+        result = [user.serialize() for user in users if user.id != user_id]
+        return jsonify(result)
+    except Exception as e:
+        print(f"Error: {str(e)}")  # Log the error 

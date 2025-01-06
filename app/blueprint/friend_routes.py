@@ -88,4 +88,5 @@ def decline_friend(id):
         else:
             return jsonify({"error": "Friend not found"}), 404
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500   
+    
