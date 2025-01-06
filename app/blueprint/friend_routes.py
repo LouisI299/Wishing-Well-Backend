@@ -18,8 +18,9 @@ def get_friends():
     try:
         user_id = get_jwt_identity()
         friendships = Friendship.query.filter_by(user_id1=user_id).all()
-        
-        return jsonify([friendship.serialize() for friendship in friendships])
+        friend_ids = [friendship.user_id2 for friendship in friendships]
+        friends = User.query.filter(User.id.in_(friend_ids)).all()
+        return jsonify([friend.serialize() for friend in friends])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
@@ -31,7 +32,7 @@ def get_requests():
         user_id = get_jwt_identity()
         friendships = Friendship.query.filter_by(user_id2=user_id, status=False).all()
         
-        return jsonify([friendships.serialize() for friendship in friendships])
+        return jsonify([friendship.serialize() for friendship in friendships])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
