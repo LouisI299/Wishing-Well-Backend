@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 def start_scheduler(app):
     from .streak_checks import check_user_streaks
+    from .duedate_checks import check_due_date
     jobstores = {
         'default': SQLAlchemyJobStore(url=app.config['SQLALCHEMY_DATABASE_URI'])
     }
@@ -18,6 +19,14 @@ def start_scheduler(app):
         trigger='interval',
         minutes=1440,
         id='streak_check',
+        replace_existing=True
+    )
+    
+    scheduler.add_job(
+        func=check_due_date,
+        trigger='interval',
+        minutes=30,
+        id='due_date_check',
         replace_existing=True
     )
     

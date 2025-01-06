@@ -69,3 +69,16 @@ def create_transaction():
         return jsonify({"message": "Transaction created successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+    
+@transaction_bp.route('/<int:id>', methods=['GET'])
+@jwt_required()
+def get_transaction(id):
+    try:
+        transactions = Transaction.query.filter_by(goal_id=id).all()
+        if transactions:
+            return jsonify([transactions.serialize() for transaction in transactions]), 200
+        else:
+            return jsonify({"error": "Transaction not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

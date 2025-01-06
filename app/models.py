@@ -48,6 +48,7 @@ class SavingsGoal(db.Model):
     period_amount = db.Column(db.Integer, nullable=False) #Monthly or weekly amount
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
+    next_due_date = db.Column(db.DateTime, nullable=True)
     
     saving_method = db.Column(db.Boolean, nullable=False, default=True) #Monthly = 1, Weekly = 0
     status = db.Column(db.Boolean , nullable=False, default=True) #In Progress = 1, Completed = 0
@@ -64,6 +65,7 @@ class SavingsGoal(db.Model):
             'period_amount': self.period_amount,
             'start_date': self.start_date,
             'end_date': self.end_date,
+            "next_due_date": self.next_due_date,
             
             'saving_method': self.saving_method,
             
@@ -105,6 +107,84 @@ class Streak(db.Model):
             # 'last_checked': self.last_checked,
             'current_streak': self.current_streak,
             'status': self.status
+        }
+        
+class Badge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(200), nullable=False)
+    image = db.Column(db.String(200), nullable=False)
+    points_required = db.Column(db.Integer, nullable=True)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'image': self.image,
+            'points_required': self.points_required
+        }
+
+class UserBadge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    badge_id = db.Column(db.Integer, db.ForeignKey('badge.id'), nullable=False)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'date': self.date,
+            'user_id': self.user_id,
+            'badge_id': self.badge_id
+        }
+        
+class Friendship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id1 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.Boolean, nullable=False, default=False)
+    date = db.Column(db.DateTime, nullable=False)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id1': self.user_id1,
+            'user_id2': self.user_id2,
+            'status': self.status,
+            'date': self.date
+        }
+        
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey('savings_goal.id'), nullable=False)
+    status = db.Column(db.Boolean, nullable=False, default=True)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'date': self.date,
+            'user_id': self.user_id,
+            'goal_id': self.goal_id,
+            'status': self.status
+        }
+        
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey('savings_goal.id'), nullable=False)
+    text = db.Column(db.String(200), nullable=False)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'date': self.date,
+            'user_id': self.user_id,
+            'goal_id': self.goal_id,
+            'text': self.text
         }
         
 #Pydantic model for validating login data

@@ -5,6 +5,7 @@ from app.blueprint.goal_routes import goal_bp
 from app.blueprint.transaction_routes import transaction_bp
 from app.blueprint.settings_routes import settings_bp
 from app.blueprint.streak_routes import streaks_bp
+from app.blueprint.friend_routes import friend_bp
 from werkzeug.exceptions import NotFound
 
 #Register blueprints
