@@ -4,6 +4,7 @@ from flask import current_app
 from werkzeug.security import generate_password_hash
 from pydantic import BaseModel, EmailStr, constr
 from typing import Optional
+from datetime import datetime
 from app import db
 
 class UserBadge(db.Model):
