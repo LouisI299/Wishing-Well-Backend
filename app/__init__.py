@@ -7,10 +7,12 @@ from flask_jwt_extended import JWTManager
 import os
 from app.tasks.scheduler import start_scheduler
 import atexit
+from flask_mail import Mail
 
 
 #Define the database
 db = SQLAlchemy()
+mail= Mail()
 
 #Function to create the app
 def create_app():
@@ -24,6 +26,7 @@ def create_app():
     
     db.init_app(app) #Initialize the database
     jwt = JWTManager(app) #Initialize the web token manager
+    mail.init_app(app)
     
     with app.app_context(): #Create the database tables
         from app import models
@@ -34,6 +37,13 @@ def create_app():
     with app.app_context(): #Start the scheduler
         scheduler = start_scheduler(app)
         
+    # Mailtrap Config
+    app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
+    app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_SSL'] = False
 
     # Blueprints
     from app.routes import register_blueprints 
