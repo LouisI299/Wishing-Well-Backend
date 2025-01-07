@@ -4,6 +4,7 @@ from ..models import Friendship, User
 from app import db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
+from sqlalchemy import or_, and_
 
 #Make a Blueprint for goals
 friend_bp = Blueprint('friend_bp', __name__)
@@ -125,8 +126,10 @@ def decline_friend(id):
             return jsonify({"error": "Friend not found"}), 404
         
         friendship = Friendship.query.filter(
-            (Friendship.user_id1 == get_jwt_identity() and Friendship.user_id2 == id) or
-            (Friendship.user_id1 == id and Friendship.user_id2 == get_jwt_identity())
+            or_(
+                and_(Friendship.user_id1 == get_jwt_identity(), Friendship.user_id2 == id),
+                and_(Friendship.user_id1 == id, Friendship.user_id2 == get_jwt_identity())
+            )
         ).first()
         if friendship:
             db.session.delete(friendship)
