@@ -42,7 +42,7 @@ def create_app():
         from app import models
         db.create_all()
         db.session.commit()
-        add_test_data()
+        #add_test_data()
         
     with app.app_context(): #Start the scheduler
         scheduler = start_scheduler(app)
