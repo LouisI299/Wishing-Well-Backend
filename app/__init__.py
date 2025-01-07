@@ -15,11 +15,12 @@ mail = Mail()
 def create_app():
     app = Flask(__name__, static_folder="../../frontend/public", static_url_path="/static")
     app.config.from_object('instance.config.Config') 
+    db.init_app(app)
+
 
     print(f"Static folder path: {os.path.abspath(app.static_folder)}")
 
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
-    db.init_app(app)
     jwt = JWTManager(app)
     mail.init_app(app)
 
