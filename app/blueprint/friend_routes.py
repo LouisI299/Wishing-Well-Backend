@@ -17,16 +17,22 @@ friend_bp = Blueprint('friend_bp', __name__)
 def get_friends():
     try:
         user_id = get_jwt_identity()
-        friendships = Friendship.query.filter(
-            (Friendship.user_id1 == user_id) | (Friendship.user_id2 == user_id)
+        friendships_1 = Friendship.query.filter(
+            Friendship.user_id1 == user_id
+        ).all()
+        
+        friendships_2 = Friendship.query.filter(
+            Friendship.user_id2 == user_id
         ).all()
         
         friend_ids = []
-        for friendship in friendships:
-            if friendship.user_id1 == user_id:
-                friend_ids.append(friendship.user_id2)
-            else:
-                friend_ids.append(friendship.user_id1)
+        
+        for friendship in friendships_1:
+            friend_ids.append(friendship.user_id2)
+            
+        for friendship in friendships_2:
+            friend_ids.append(friendship.user_id1)
+        
         
         friends = User.query.filter(User.id.in_(friend_ids)).all()
         if not friends:
