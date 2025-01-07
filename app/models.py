@@ -87,9 +87,7 @@ class SavingsGoal(db.Model):
             'start_date': self.start_date,
             'end_date': self.end_date,
             "next_due_date": self.next_due_date,
-            
             'saving_method': self.saving_method,
-            
             'status': self.status
         }
     
@@ -109,78 +107,7 @@ class Transaction(db.Model):
             'transaction_date': self.transaction_date,
             'type': self.type
         }
-        
-class Streak(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    start_date = db.Column(db.DateTime, nullable=False)
-    end_date = db.Column(db.DateTime, nullable=True)
-    check_date = db.Column(db.DateTime, nullable=False)
-    current_streak = db.Column(db.Integer, nullable=False)
-    status = db.Column(db.Boolean, nullable=False, default=True)
-    
-    def serialize(self):
-        return {
-            'id': self.id,
-            'user_id': self.user_id,
-            'start_date': self.start_date,
-            'end_date': self.end_date,
-            # 'last_checked': self.last_checked,
-            'current_streak': self.current_streak,
-            'status': self.status
-        }
-        
-class Friendship(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id1 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user_id2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    status = db.Column(db.Boolean, nullable=False, default=False)
-    date = db.Column(db.DateTime, nullable=False)
-    
-    def serialize(self):
-        return {
-            'id': self.id,
-            'user_id1': self.user_id1,
-            'user_id2': self.user_id2,
-            'status': self.status,
-            'date': self.date
-        }
-        
-class Like(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    goal_id = db.Column(db.Integer, db.ForeignKey('savings_goal.id'), nullable=False)
-    status = db.Column(db.Boolean, nullable=False, default=True)
-    
-    def serialize(self):
-        return {
-            'id': self.id,
-            'date': self.date,
-            'user_id': self.user_id,
-            'goal_id': self.goal_id,
-            'status': self.status
-        }
-        
-class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    goal_id = db.Column(db.Integer, db.ForeignKey('savings_goal.id'), nullable=False)
-    text = db.Column(db.String(200), nullable=False)
-    
-    user = db.relationship('User', backref=db.backref('comments', lazy=True))
-    
-    def serialize(self):
-        return {
-            'id': self.id,
-            'date': self.date,
-            'user_id': self.user_id,
-            'goal_id': self.goal_id,
-            'text': self.text,
-            'user_name': f"{self.user.first_name} {self.user.last_name}"
-        }
-        
+
 class Badge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -197,27 +124,3 @@ class Badge(db.Model):
             'description': self.description,
             'image_url': f"/static/images/badges/{self.image_url}"
         }
-
-#Pydantic model for validating login data
-class UserLoginModel(BaseModel):
-    email: EmailStr
-    password: constr(min_length=6)
-    
-    
-#Pydantic model for creating a new user
-class UserCreateModel(BaseModel):
-    first_name: constr(min_length=2, max_length=50)
-    last_name: constr(min_length=2, max_length=50)
-    email: EmailStr
-    password: constr(min_length=6)
-    
-#Pydantic model for creating a new goal
-class GoalCreateModel(BaseModel):
-    name: constr(min_length=2, max_length=50)
-    target_amount: int
-    current_amount: Optional[float] = 0
-    end_date: str
-    category: constr(min_length=2, max_length=50)
-    period_amount: Optional[float] = 0
-    saving_method: bool
-    
