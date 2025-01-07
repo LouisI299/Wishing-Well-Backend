@@ -53,7 +53,7 @@ class User(db.Model):
             'email': self.email,
             'join_date': self.join_date,
             'points': self.points,
-            'level': self.level
+            'level': self.level,
             'badges': [badge.serialize() for badge in self.badges]
         }
 
