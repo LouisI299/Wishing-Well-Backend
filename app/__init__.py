@@ -34,7 +34,7 @@ def create_app():
         from app import models
         db.create_all()
         db.session.commit()
-        add_test_data()
+        #add_test_data()
 
         scheduler = start_scheduler(app)
         atexit.register(lambda: scheduler.shutdown())
