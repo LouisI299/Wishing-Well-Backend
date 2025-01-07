@@ -131,3 +131,17 @@ def delete_goal(id):
         db.session.rollback()
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+    
+    
+# Route for getting friend's goals
+@goal_bp.route('/friend/<int:id>', methods=['GET'])
+@jwt_required()
+def get_friend_goals(id):
+    try:
+        goals = SavingsGoal.query.filter_by(user_id=id).all()
+        if goals:
+            return jsonify([goal.serialize() for goal in goals]), 200
+        else:
+            return jsonify({"error": "Goals not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
