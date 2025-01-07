@@ -171,3 +171,15 @@ def assign_badges(user):
             user.badges.append(badge)
     
     db.session.commit()
+
+@user_bp.route('/badges', methods=['GET'])
+@jwt_required()
+def get_user_badges():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    return jsonify([{
+        "id": badge.id,
+        "name": badge.name,
+        "description": badge.description,
+        "image_url": badge.image_url
+    } for badge in user.badges])
