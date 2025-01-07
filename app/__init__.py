@@ -28,6 +28,7 @@ def create_app():
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
     # Initialize JWT and Mail
+    db.init_app(app)
     jwt = JWTManager(app)
     mail.init_app(app)
 
