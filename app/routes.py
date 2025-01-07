@@ -21,7 +21,7 @@ def register_blueprints(app):
     app.register_blueprint(friend_bp, url_prefix='/api/friends')
     app.register_blueprint(like_bp, url_prefix='/api/likes')
     app.register_blueprint(comment_bp, url_prefix='/api/comments')
-    app.register_blueprint(badge_bp, url_prefix='/api')
+    app.register_blueprint(badge_bp, url_prefix='/api/badges')
     
     
     
