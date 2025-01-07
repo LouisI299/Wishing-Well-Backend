@@ -15,7 +15,7 @@ like_bp = Blueprint('like_bp', __name__)
 @jwt_required()
 def get_likes(id):
     try:
-        likes = Like.query.filter_by(goal_id=id).all()
+        likes = Like.query.filter_by(goal_id=id, status = True).all()
         total_likes = len(likes)
         return jsonify({"total_likes": total_likes})
     except Exception as e:
