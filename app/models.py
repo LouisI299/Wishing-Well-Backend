@@ -4,11 +4,6 @@ from werkzeug.security import generate_password_hash
 from pydantic import BaseModel, EmailStr, StringConstraints, constr
 from typing_extensions import Optional, Annotated
 
-user_badges = db.Table('user_badges',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('badge_id', db.Integer, db.ForeignKey('badge.id'), primary_key=True)
-)
-
 #User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,12 +14,6 @@ class User(db.Model):
     join_date = db.Column(db.DateTime, nullable=False)
     points = db.Column(db.Integer, nullable=False, default=0)
     level = db.Column(db.Integer, nullable=False, default=1)
-
-    badges = db.relationship(
-        'Badge',
-        secondary=user_badges,
-        backref=db.backref('users', lazy='dynamic')
-    )
     
     #Constructor for making a new user
     def __init__(self, first_name, last_name, email, password, join_date, points, level):
@@ -118,23 +107,6 @@ class Streak(db.Model):
             # 'last_checked': self.last_checked,
             'current_streak': self.current_streak,
             'status': self.status
-        }
-        
-class Badge(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    description = db.Column(db.String(255), nullable=False)
-    image_url = db.Column(db.String(255), nullable=False)
-    
-    def __repr__(self):
-        return f"<Badge {self.name}>"
-    
-    def serialize(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'image_url': self.image_url
         }
         
 class Friendship(db.Model):

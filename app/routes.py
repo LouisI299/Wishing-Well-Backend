@@ -9,6 +9,7 @@ from app.blueprint.friend_routes import friend_bp
 from app.blueprint.like_routes import like_bp
 from app.blueprint.comment_routes import comment_bp
 from werkzeug.exceptions import NotFound
+from app.blueprint.badge_routes import badge_bp
 
 #Register blueprints
 def register_blueprints(app):
@@ -20,6 +21,7 @@ def register_blueprints(app):
     app.register_blueprint(friend_bp, url_prefix='/api/friends')
     app.register_blueprint(like_bp, url_prefix='/api/likes')
     app.register_blueprint(comment_bp, url_prefix='/api/comments')
+    app.register_blueprint(badge_bp, url_prefix='/api')
     
     
     
