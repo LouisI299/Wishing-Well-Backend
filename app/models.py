@@ -148,13 +148,16 @@ class Comment(db.Model):
     goal_id = db.Column(db.Integer, db.ForeignKey('savings_goal.id'), nullable=False)
     text = db.Column(db.String(200), nullable=False)
     
+    user = db.relationship('User', backref=db.backref('comments', lazy=True))
+    
     def serialize(self):
         return {
             'id': self.id,
             'date': self.date,
             'user_id': self.user_id,
             'goal_id': self.goal_id,
-            'text': self.text
+            'text': self.text,
+            'user_name': f"{self.user.first_name} {self.user.last_name}"
         }
         
 class Badge(db.Model):

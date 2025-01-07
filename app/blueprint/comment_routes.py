@@ -15,7 +15,9 @@ comment_bp = Blueprint('comment_bp', __name__)
 def get_comments(id):
     try:
         comments = Comment.query.filter_by(goal_id=id).all()
-        return jsonify([comment.serialize() for comment in comments])
+        
+        
+        return jsonify([comment.serialize() for comment in comments]), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
