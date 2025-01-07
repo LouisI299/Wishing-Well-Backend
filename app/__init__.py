@@ -4,15 +4,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 import os
 from app.tasks.scheduler import start_scheduler
 import atexit
 from flask_mail import Mail
 
-
 #Define the database
 db = SQLAlchemy()
 mail= Mail()
+migrate = Migrate()
 
 #Function to create the app
 def create_app():
@@ -25,18 +26,10 @@ def create_app():
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}) #Allow requests from the frontend
     
     db.init_app(app) #Initialize the database
+    migrate.init_app(app, db)
     jwt = JWTManager(app) #Initialize the web token manager
     mail.init_app(app)
     
-    with app.app_context(): #Create the database tables
-        from app import models
-        db.create_all()
-        db.session.commit()
-        #add_test_data()
-        
-    with app.app_context(): #Start the scheduler
-        scheduler = start_scheduler(app)
-        
     # Mailtrap Config
     app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
     app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
@@ -45,6 +38,15 @@ def create_app():
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
 
+    with app.app_context(): #Create the database tables
+        from app import models
+        db.create_all()
+        db.session.commit()
+        #add_test_data()
+        
+    with app.app_context(): #Start the scheduler
+        scheduler = start_scheduler(app)
+    
     # Blueprints
     from app.routes import register_blueprints 
     register_blueprints(app) #Register the blueprints
