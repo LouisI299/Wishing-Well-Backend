@@ -26,3 +26,12 @@ def get_highest_streak():
     highest_streak = max((streak.current_streak for streak in streaks), default=0)
     
     return jsonify({"highest_streak": highest_streak}), 200
+    
+# update
+@streaks_bp.route('/update', methods=['POST'])
+@jwt_required()
+def update_streak():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    assign_badges(user)
+    return jsonify({"message": "Streak updated and badges assigned"}), 200
