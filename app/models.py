@@ -1,8 +1,10 @@
 #Imports
-from app import db
+from flask import current_app
 from werkzeug.security import generate_password_hash
 from pydantic import BaseModel, EmailStr, StringConstraints, constr
 from typing_extensions import Optional, Annotated
+from app import db
+
 
 #User model
 class User(db.Model):
