@@ -142,3 +142,32 @@ def search_users():
         return jsonify(result)
     except Exception as e:
         print(f"Error: {str(e)}")  # Log the error 
+
+# badges
+def assign_badges(user):
+    badges_to_assign = []
+
+    if user.streak and user.streak.current_streak == 1:
+        badges_to_assign.append(1)  # Streak 1
+    if user.streak and user.streak.current_streak == 3:
+        badges_to_assign.append(2)  # Streak 3
+    if user.streak and user.streak.current_streak == 5:
+        badges_to_assign.append(3)  # Streak 5
+
+    if user.level >= 5:
+        badges_to_assign.append(4)  # Level 5
+    if user.level >= 10:
+        badges_to_assign.append(5)  # Level 10
+
+    total_savings = sum(goal.amount for goal in user.goals)
+    if total_savings >= 1000:
+        badges_to_assign.append(6)  # €1000
+    if total_savings >= 2000:
+        badges_to_assign.append(7)  # €2000
+
+    for badge_id in badges_to_assign:
+        badge = Badge.query.get(badge_id)
+        if badge and badge not in user.badges:
+            user.badges.append(badge)
+    
+    db.session.commit()
