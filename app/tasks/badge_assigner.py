@@ -1,10 +1,11 @@
-from app.models import User, Badge
+
 from app import db, create_app
 
 def assign_badges():
     app = create_app()
     
     with app.app_context():
+        from app.models import User, Badge
         
         users = User.query.all()
         badge_mapping = {
