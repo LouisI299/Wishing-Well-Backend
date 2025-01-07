@@ -18,11 +18,13 @@ def get_friends():
     try:
         user_id = get_jwt_identity()
         friendships_1 = Friendship.query.filter(
-            Friendship.user_id1 == user_id
+            Friendship.user_id1 == user_id,
+            Friendship.status == True
         ).all()
         
         friendships_2 = Friendship.query.filter(
-            Friendship.user_id2 == user_id
+            Friendship.user_id2 == user_id,
+            Friendship.status == True
         ).all()
         
         friend_ids = []
