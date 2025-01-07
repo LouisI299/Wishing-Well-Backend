@@ -31,7 +31,7 @@ def create_app():
     app.config['MAIL_USE_SSL'] = False
 
     with app.app_context():
-        from app import models
+        
         db.create_all()
         db.session.commit()
         #add_test_data()
