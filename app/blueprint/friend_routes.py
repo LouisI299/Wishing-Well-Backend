@@ -25,7 +25,7 @@ def get_friends():
         for friendship in friendships:
             if friendship.user_id1 == user_id:
                 friend_ids.append(friendship.user_id2)
-            else:
+            elif friendship.user_id2 == user_id:
                 friend_ids.append(friendship.user_id1)
         
         friends = User.query.filter(User.id.in_(friend_ids)).all()
