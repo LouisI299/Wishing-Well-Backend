@@ -80,6 +80,14 @@ def add_friend():
         user_id = get_jwt_identity()
         friend_id = data['friend_id']
         
+        existing_friendship = Friendship.query.filter(
+            (Friendship.user_id1 == user_id and Friendship.user_id2 == friend_id) or
+            (Friendship.user_id1 == friend_id and Friendship.user_id2 == user_id)
+        ).first()
+        
+        if existing_friendship:
+            return jsonify({"error": "Friendship already exists"}), 400
+        
         new_friendship = Friendship(
             user_id1=user_id,
             user_id2=friend_id,
