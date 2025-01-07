@@ -13,24 +13,17 @@ db = SQLAlchemy()
 mail = Mail()
 
 
-# Application Factory Pattern
 def create_app():
     app = Flask(__name__, static_folder="../../frontend/public", static_url_path="/static")
-    app.config.from_object('instance.config.Config') 
+    app.config.from_object('instance.config.Config')
 
-    # Database initialization
-    db.init_app(app)
-
-    # Logging static folder path for debugging
     print(f"Static folder path: {os.path.abspath(app.static_folder)}")
 
-    # Enable CORS
+    # Initialize extensions
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
-
-    # Initialize JWT and Mail
-    db.init_app(app)
     jwt = JWTManager(app)
     mail.init_app(app)
+    db.init_app(app)
 
     # Mailtrap Config
     app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
@@ -41,21 +34,20 @@ def create_app():
     app.config['MAIL_USE_SSL'] = False
 
     with app.app_context():
-        # Import models here to avoid circular imports
+        # Import modellen en creëer tabellen
         from app import models
         db.create_all()
         db.session.commit()
 
-        # Start the scheduler
+        # Start de scheduler
         from app.tasks.scheduler import start_scheduler
         scheduler = start_scheduler(app)
         atexit.register(lambda: scheduler.shutdown())
 
-    # Register Blueprints
+    # Blueprint-registratie
     from app.routes import register_blueprints
     register_blueprints(app)
 
-    # Cleanup database session
     @app.teardown_appcontext
     def shutdown_session(exception=None):
         db.session.remove()
@@ -99,16 +91,17 @@ BADGES = [
 def add_test_data():
     from app.models import User, SavingsGoal, Badge
 
-    for user in USERS:
-        if not User.query.filter_by(email=user["email"]).first():
-            db.session.add(User(**user, **USER_DEFAULTS))
+    with current_app.app_context():
+        for user in USERS:
+            if not User.query.filter_by(email=user["email"]).first():
+                db.session.add(User(**user, **USER_DEFAULTS))
 
-    for goal in GOALS:
-        db.session.add(SavingsGoal(**goal, **GOAL_DEFAULTS))
+        for goal in GOALS:
+            db.session.add(SavingsGoal(**goal, **GOAL_DEFAULTS))
 
-    for badge in BADGES:
-        if not Badge.query.filter_by(name=badge["name"]).first():
-            db.session.add(Badge(**badge))
+        for badge in BADGES:
+            if not Badge.query.filter_by(name=badge["name"]).first():
+                db.session.add(Badge(**badge))
 
-    db.session.commit()
-    print("Testdata succesvol toegevoegd!")
+        db.session.commit()
+        print("Testdata succesvol toegevoegd!")
