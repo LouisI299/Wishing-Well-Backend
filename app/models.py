@@ -6,6 +6,21 @@ from pydantic import BaseModel, EmailStr, constr
 from typing import Optional
 from app import db
 
+class UserBadge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    badge_id = db.Column(db.Integer, db.ForeignKey('badge.id'), nullable=False)
+    awarded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', back_populates='badges')
+    badge = db.relationship('Badge')
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'badge': self.badge.serialize(),
+            'awarded_at': self.awarded_at
+        }
 
 #User model
 class User(db.Model):
@@ -17,6 +32,7 @@ class User(db.Model):
     join_date = db.Column(db.DateTime, nullable=False)
     points = db.Column(db.Integer, nullable=False, default=0)
     level = db.Column(db.Integer, nullable=False, default=1)
+    badges = db.relationship('UserBadge', back_populates='user')
     
     #Constructor for making a new user
     def __init__(self, first_name, last_name, email, password, join_date, points, level):
@@ -38,6 +54,7 @@ class User(db.Model):
             'join_date': self.join_date,
             'points': self.points,
             'level': self.level
+            'badges': [badge.serialize() for badge in self.badges]
         }
 
 #Savings goal model
