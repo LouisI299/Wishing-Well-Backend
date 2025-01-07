@@ -1,4 +1,4 @@
-#Imports
+# Imports
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -7,22 +7,32 @@ from flask_mail import Mail
 import os
 import atexit
 from datetime import datetime
-from app.tasks.scheduler import start_scheduler
 
+# Initialize extensions
 db = SQLAlchemy()
 mail = Mail()
 
+
+# Application Factory Pattern
 def create_app():
     app = Flask(__name__, static_folder="../../frontend/public", static_url_path="/static")
     app.config.from_object('instance.config.Config') 
 
+    # Database initialization
+    db.init_app(app)
+
+    # Logging static folder path for debugging
     print(f"Static folder path: {os.path.abspath(app.static_folder)}")
 
+    # Enable CORS
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+
+    # Initialize JWT and Mail
     db.init_app(app)
     jwt = JWTManager(app)
     mail.init_app(app)
 
+    # Mailtrap Config
     app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
     app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
     app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
@@ -34,20 +44,25 @@ def create_app():
         
         db.create_all()
         db.session.commit()
-        #add_test_data()
 
+        # Start the scheduler
+        from app.tasks.scheduler import start_scheduler
         scheduler = start_scheduler(app)
         atexit.register(lambda: scheduler.shutdown())
 
+    # Register Blueprints
     from app.routes import register_blueprints
     register_blueprints(app)
 
+    # Cleanup database session
     @app.teardown_appcontext
     def shutdown_session(exception=None):
         db.session.remove()
 
     return app
 
+
+# Test Data
 USERS = [
     {"first_name": "John", "last_name": "Doe", "email": "john@m.m", "password": "password"},
     {"first_name": "Jane", "last_name": "Doe", "email": "jane@m.m", "password": "password"},
@@ -78,6 +93,8 @@ BADGES = [
     {"name": "Totaal €2000", "description": "Behaald bij €2000 gespaard", "image_url": "total2000.png"},
 ]
 
+
+# Voeg testdata toe
 def add_test_data():
     from app.models import User, SavingsGoal, Badge
 
