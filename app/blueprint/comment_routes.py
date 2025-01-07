@@ -38,6 +38,6 @@ def create_comment(id):
         )
         db.session.add(new_comment)
         db.session.commit()
-        return jsonify({"message": "Comment added"}), 200
+        return jsonify(new_comment.serialize()), 200
     except Exception as e:
         return jsonify({"error": str (e)}), 500
