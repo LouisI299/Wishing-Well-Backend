@@ -121,7 +121,8 @@ def accept_friend(id):
 @jwt_required()
 def decline_friend(id):
     try:
-        friend_id = User.query.get(id)
+        friend = User.query.get(id)
+        friend_id = friend.id
         user_id = get_jwt_identity()
         if not friend_id:
             return jsonify({"error": "Friend not found"}), 404
