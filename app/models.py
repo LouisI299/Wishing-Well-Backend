@@ -4,6 +4,7 @@ from flask import current_app
 from werkzeug.security import generate_password_hash
 from pydantic import BaseModel, EmailStr, constr
 from typing import Optional
+from app import db
 
 
 #User model
