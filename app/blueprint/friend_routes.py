@@ -120,7 +120,14 @@ def accept_friend(id):
 @jwt_required()
 def decline_friend(id):
     try:
-        friendship = Friendship.query.get(id)
+        friend = User.query.get(User.id == id)
+        if not friend:
+            return jsonify({"error": "Friend not found"}), 404
+        
+        friendship = Friendship.query.filter(
+            (Friendship.user_id1 == get_jwt_identity() and Friendship.user_id2 == id) or
+            (Friendship.user_id1 == id and Friendship.user_id2 == get_jwt_identity())
+        ).first()
         if friendship:
             db.session.delete(friendship)
             db.session.commit()
