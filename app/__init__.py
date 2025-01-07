@@ -14,7 +14,7 @@ mail = Mail()
 
 
 def create_app():
-    app = Flask(__name__, static_folder="../../../frontend/public", static_url_path="/static")
+    app = Flask(__name__, static_folder="../../frontend/public", static_url_path="/static")
     app.config.from_object('instance.config.Config')
 
     print(f"Static folder path: {os.path.abspath(app.static_folder)}")
