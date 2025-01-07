@@ -157,6 +157,23 @@ class Comment(db.Model):
             'text': self.text
         }
         
+class Badge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    image_url = db.Column(db.String(255), nullable=False)
+    
+    def __repr__(self):
+        return f"<Badge {self.name}>"
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'image_url': self.image_url
+        }
+
 #Pydantic model for validating login data
 class UserLoginModel(BaseModel):
     email: EmailStr
