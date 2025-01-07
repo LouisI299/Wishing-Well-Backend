@@ -134,7 +134,7 @@ def search_users():
         
         # Search for users that match the query in first_name or last_name (case-insensitive)
         users = User.query.filter(
-            (User.first_name.ilike(f'%{query}%')) | (User.last_name.ilike(f'%{query}%'))
+            (User.first_name.ilike(f'%{query}%')) | (User.last_name.ilike(f'%{query}%' & (User.id != user_id)))
         ).all()
 
         # Return serialized user data (except the logged-in user)
