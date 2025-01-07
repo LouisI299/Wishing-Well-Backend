@@ -1,5 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from app.tasks.badge_assigner import assign_badges
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -27,6 +28,14 @@ def start_scheduler(app):
         trigger='interval',
         minutes=30,
         id='due_date_check',
+        replace_existing=True
+    )
+
+    scheduler.add_job(
+        func=assign_badges,
+        trigger='interval',
+        minutes=1440,
+        id='badge_assign_check',
         replace_existing=True
     )
     
