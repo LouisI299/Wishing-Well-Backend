@@ -1,6 +1,27 @@
 #Imports
-from app import db
+from flask_sqlalchemy import SQLAlchemy
+from flask import current_app
 from werkzeug.security import generate_password_hash
+from pydantic import BaseModel, EmailStr, constr
+from typing import Optional
+from datetime import datetime
+from app import db
+
+class UserBadge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    badge_id = db.Column(db.Integer, db.ForeignKey('badge.id'), nullable=False)
+    awarded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', back_populates='badges')
+    badge = db.relationship('Badge')
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'badge': self.badge.serialize(),
+            'awarded_at': self.awarded_at
+        }
 
 #User model
 class User(db.Model):
@@ -12,6 +33,7 @@ class User(db.Model):
     join_date = db.Column(db.DateTime, nullable=False)
     points = db.Column(db.Integer, nullable=False, default=0)
     level = db.Column(db.Integer, nullable=False, default=1)
+    badges = db.relationship('UserBadge', back_populates='user')
     
     #Constructor for making a new user
     def __init__(self, first_name, last_name, email, password, join_date, points, level):
@@ -32,20 +54,25 @@ class User(db.Model):
             'email': self.email,
             'join_date': self.join_date,
             'points': self.points,
-            'level': self.level
+            'level': self.level,
+            'badges': [badge.serialize() for badge in self.badges]
         }
-    
+
 #Savings goal model
 class SavingsGoal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
     target_amount = db.Column(db.Integer, nullable=False)
     current_amount = db.Column(db.Integer, nullable=False)
+    period_amount = db.Column(db.Integer, nullable=False) #Monthly or weekly amount
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
-    completed = db.Column(db.Boolean, nullable=False, default=False)
-    status = db.Column(db.String(50), nullable=False, default='In Progress')
+    next_due_date = db.Column(db.DateTime, nullable=True)
+    
+    saving_method = db.Column(db.Boolean, nullable=False, default=True) #Monthly = 1, Weekly = 0
+    status = db.Column(db.Boolean , nullable=False, default=True) #In Progress = 1, Completed = 0
     
     #Function to serialize the goal object
     def serialize(self):
@@ -53,11 +80,16 @@ class SavingsGoal(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'name': self.name,
+            'category': self.category,
             'target_amount': self.target_amount,
             'current_amount': self.current_amount,
+            'period_amount': self.period_amount,
             'start_date': self.start_date,
             'end_date': self.end_date,
-            'completed': self.completed,
+            "next_due_date": self.next_due_date,
+            
+            'saving_method': self.saving_method,
+            
             'status': self.status
         }
     
@@ -68,3 +100,124 @@ class Transaction(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     transaction_date = db.Column(db.DateTime, nullable=False)
     type = db.Column(db.String(50), nullable=False)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'goal_id': self.goal_id,
+            'amount': self.amount,
+            'transaction_date': self.transaction_date,
+            'type': self.type
+        }
+        
+class Streak(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, nullable=True)
+    check_date = db.Column(db.DateTime, nullable=False)
+    current_streak = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.Boolean, nullable=False, default=True)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+            # 'last_checked': self.last_checked,
+            'current_streak': self.current_streak,
+            'status': self.status
+        }
+        
+class Friendship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id1 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.Boolean, nullable=False, default=False)
+    date = db.Column(db.DateTime, nullable=False)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id1': self.user_id1,
+            'user_id2': self.user_id2,
+            'status': self.status,
+            'date': self.date
+        }
+        
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey('savings_goal.id'), nullable=False)
+    status = db.Column(db.Boolean, nullable=False, default=True)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'date': self.date,
+            'user_id': self.user_id,
+            'goal_id': self.goal_id,
+            'status': self.status
+        }
+        
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey('savings_goal.id'), nullable=False)
+    text = db.Column(db.String(200), nullable=False)
+    
+    user = db.relationship('User', backref=db.backref('comments', lazy=True))
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'date': self.date,
+            'user_id': self.user_id,
+            'goal_id': self.goal_id,
+            'text': self.text,
+            'user_name': f"{self.user.first_name} {self.user.last_name}"
+        }
+        
+class Badge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    image_url = db.Column(db.String(255), nullable=False)
+    
+    def __repr__(self):
+        return f"<Badge {self.name}>"
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'image_url': f"/static/images/badges/{self.image_url}"
+        }
+
+#Pydantic model for validating login data
+class UserLoginModel(BaseModel):
+    email: EmailStr
+    password: constr(min_length=6)
+    
+    
+#Pydantic model for creating a new user
+class UserCreateModel(BaseModel):
+    first_name: constr(min_length=2, max_length=50)
+    last_name: constr(min_length=2, max_length=50)
+    email: EmailStr
+    password: constr(min_length=6)
+    
+#Pydantic model for creating a new goal
+class GoalCreateModel(BaseModel):
+    name: constr(min_length=2, max_length=50)
+    target_amount: int
+    current_amount: Optional[float] = 0
+    end_date: str
+    category: constr(min_length=2, max_length=50)
+    period_amount: Optional[float] = 0
+    saving_method: bool
+    

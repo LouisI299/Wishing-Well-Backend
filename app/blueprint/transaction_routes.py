@@ -1,0 +1,84 @@
+#Imports
+from flask import Blueprint, request, jsonify
+from ..models import SavingsGoal, Transaction, User, Streak
+from app import db
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from datetime import datetime
+
+#Make a Blueprint for goals
+transaction_bp = Blueprint('transaction_bp', __name__)
+
+@transaction_bp.route('/', methods=['POST'])
+@jwt_required()
+def create_transaction():
+    try:
+        data = request.get_json()
+        goal_id = data['goal_id']
+        amount = data['amount']
+        type = data['type']
+        user_id = get_jwt_identity()
+        
+        user = User.query.get(user_id)
+        active_streak = Streak.query.filter_by(user_id=user_id, status = True).first()
+        goal = SavingsGoal.query.get(goal_id)
+        
+        if not goal:
+            return jsonify({"error": "Goal not found"}), 404
+        
+        
+        
+        
+        
+        new_transaction = Transaction(
+            goal_id=goal_id,
+            amount=amount,
+            transaction_date=datetime.now(),
+            type=type
+        )
+        
+        db.session.add(new_transaction)
+        
+        
+        transaction_goal = SavingsGoal.query.get(goal_id)
+        if type == 'deposit':
+            transaction_goal.current_amount += amount
+            if transaction_goal.current_amount > transaction_goal.target_amount:
+                return jsonify({"error": "Amount exceeds goal amount"}), 400
+        else:
+            transaction_goal.current_amount -= amount
+            if amount > transaction_goal.current_amount:
+                return jsonify({"error": "Amount exceeds goal amount"}), 400
+            
+        if transaction_goal.current_amount == transaction_goal.target_amount:
+            transaction_goal.status = False
+            transaction_goal.end_date = datetime.now()
+        
+        points_gained = (amount / transaction_goal.period_amount) * 10
+        if active_streak:
+            points_gained = points_gained * active_streak.current_streak
+            
+        user.points += points_gained
+        
+        while user.points >= user.level * 100:
+            user.points -= user.level * 100
+            user.level += 1
+        
+        db.session.commit()
+        
+        
+        return jsonify({"message": "Transaction created successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    
+@transaction_bp.route('/<int:id>', methods=['GET'])
+@jwt_required()
+def get_transaction(id):
+    try:
+        transactions = Transaction.query.filter_by(goal_id=id).all()
+        if transactions:
+            return jsonify([transactions.serialize() for transaction in transactions]), 200
+        else:
+            return jsonify({"error": "Transaction not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
